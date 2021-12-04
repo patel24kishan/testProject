@@ -1,0 +1,40 @@
+import json
+
+def lambda_handler(event, context):
+    print(json.dumps(event))
+    userInput = event['queryStringParameters']['userinput']
+    key=5
+    print('Cipher=' + userInput)
+    code = ""
+    
+    for i in range(len(userInput)):
+        char = userInput[i]
+        
+        # Encrypt uppercase characters in plain text
+        if (char.isupper()):
+            code += chr((ord(char) + key-65) % 26 + 65)
+            
+        # Encrypt lowercase characters in plain text
+        else:
+            code += chr((ord(char) + key - 97) % 26 + 97)
+
+   
+   #2. Construct the body of the response object
+    correctAnswer = {}
+    correctAnswer['correctAnswer'] = code
+    correctAnswer['message'] = 'Hello from Lambda Function'
+
+	#3. Construct http response object
+    responseObject = {}
+
+    responseObject['body'] = json.dumps(correctAnswer)
+	
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        'body': json.dumps(correctAnswer)
+    }
