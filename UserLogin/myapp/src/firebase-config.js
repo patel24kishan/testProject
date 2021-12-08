@@ -1,5 +1,5 @@
 import { getAuth,createUserWithEmailAndPassword, onAuthStateChanged,signOut, signInWithEmailAndPassword } from "firebase/auth";
-import { useRef,useState,useEffect } from "react";
+import { useState,useEffect } from "react";
 import { initializeApp } from 'firebase/app';
 import { getFirestore} from 'firebase/firestore';
 
@@ -39,6 +39,5 @@ export function useAuth() {
     const temp=onAuthStateChanged(auth,user => setCurrentSignedInUser(user));
     return temp;
     }, [])
-    console.log(currentSignedInUser);
   return currentSignedInUser;
 }
