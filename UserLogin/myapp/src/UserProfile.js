@@ -10,6 +10,14 @@ const LoggedIn = ({ emailValue }) =>{
   const [boxNumber,SetBoxNumber]=useState('');
   const [transactionAmount,SetTransactionAmount]=useState('0');
 
+
+
+  useEffect(() => {
+    getBoxNumber();
+    getBalanceOfBox();
+  },[boxNumber]);
+
+  
     async function handleSignout(){
         try {
           await userSignOut();
@@ -28,68 +36,83 @@ const LoggedIn = ({ emailValue }) =>{
     }
 
     async function getBoxNumber() {
+      try{
       const docRef = doc(firebaseDB, "UserData", emailValue);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
       } else {
       console.log("No such boxNumber!");
       }   
-     SetBoxNumber(docSnap.get("boxnumber"));
+      var tempNo=await docSnap.get("boxnumber");
+     SetBoxNumber(tempNo);
      console.log("boxNumber - ",boxNumber);
+ 
+     
+    }catch(e) {
 
+      console.log("getboxNumber",e);
+      }
     } 
 
     async function getBalanceOfBox() {
+      try{
       const docRef = doc(firebaseDB, "boxBalances", boxNumber);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
       } else {
       console.log("No such balance!");
-      }   
-     SetBoxBalance(docSnap.get("balance"));
+      }  
+      var balance = await docSnap.get("balance");
+     SetBoxBalance(balance);
      console.log("box balance - ",boxBalance);
-
+    }catch(e) {
+      console.log("getBalance",e);
+    }
     } 
 
     async function makeTransaction(){
-
-      var currentDate = new Date(),
-      date = (currentDate.getMonth() + 1) + '/' + currentDate.getDate()+'/'+currentDate.getFullYear() ;
-
+      try{
+      var currentDate = new Date();
+      const dateInfo = (currentDate.getMonth() + 1) + '/' + currentDate.getDate()+'/'+currentDate.getFullYear() ;
+      const random = Math.floor(Math.random() * 100);
+      const temp="T0"+random;
       const transactionInfo = {
         amount:transactionAmount,
         boxID: boxNumber,
         user: emailValue,
-        date: date
+        date: dateInfo
       };
-      await setDoc(doc(firebaseDB, "boxData"), transactionInfo);
+      await setDoc(doc(firebaseDB, "boxData",temp), transactionInfo);
+    }catch(e) {
+      console.log("makeTransaction",e); 
+
+    }
 
     }
     
     async function updateboxBalance(){
       
+      try{
       const docRef = doc(firebaseDB, "boxBalances", boxNumber);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
       } else {
       console.log("No such document!");
       }   
-     var tempBalance=docSnap.get("balance");
 
-     const updateboxBalanceRef = doc(firebaseDB, "boxBalances",boxNumber) - transactionAmount;
+
+     var updateboxBalance = parseInt(docSnap.get("balance")) - transactionAmount;
     
-    await updateDoc(updateboxBalanceRef, {
-    amount: updateboxBalance
+    await updateDoc(docRef, {
+    balance: updateboxBalance
         });
-
-        getBalanceOfBox();
+       SetBoxBalance(updateboxBalance);
+      }catch(e) {
+        console.log("updateboxBalance",e);
+      }
     }
 
-    useEffect(() => {
-      getBoxNumber();
-      getBalanceOfBox();
-    },[]);
-
+   
     return (
         <div>
             <nav>
@@ -105,7 +128,7 @@ const LoggedIn = ({ emailValue }) =>{
             <br /><br />
                  <button > Virtual Assistant</button>
                 <br /> <br />
-                <button > Visualize transaction</button>
+                <button onClick={()=> window.open("https://datastudio.google.com/embed/reporting/5192856f-9ac3-4fd3-826f-892c98f95409/page/03GhC", "_blank")} > Visualize transaction</button>
                 <br /> <br /> <br />
                 <button onClick={() => { handleSignout();updateUserStatus() }}> LogOut</button>
 

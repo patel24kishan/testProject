@@ -1,0 +1,10 @@
+SELECT  
+    JSON_VALUE(data,'$.boxID') AS BOX_ID,
+    JSON_VALUE(data ,'$.amount') AS AMOUNT,
+    JSON_VALUE(data,'$.user') AS USER,
+    JSON_VALUE(data,'$.date') AS DATE_OF_TRANSACTION
+ 
+FROM 
+    `serverlessproject-95c6d.boxData_export.posts_raw_latest`
+
+

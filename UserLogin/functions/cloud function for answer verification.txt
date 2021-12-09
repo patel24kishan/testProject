@@ -1,0 +1,32 @@
+from firebase_admin import credentials, firestore
+firebase_admin.initialize_app()
+
+def verifyAnswers(request):
+   print(json.dumps(request))
+	
+   firstoreRef = firestore.client()
+	 userEmail=request['queryStringParameters']['useremail']
+   userAnswer = request['queryStringParameters']['userinput']
+	 correctAnswer = firstoreRef.collection(u'securityquestions').document(data['useremail']['ans'])
+   flag=false
+   if (userAnswer==correctAnswer):
+     flag=true
+   
+    result = {}
+    result['verify'] = flag
+    correctAnswer['message'] = 'Hello from cloud Function'
+
+	#3. Construct http response object
+    responseObject = {}
+
+    responseObject['body'] = json.dumps(correctAnswer)
+	
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        'body': json.dumps(correctAnswer)
+    }
