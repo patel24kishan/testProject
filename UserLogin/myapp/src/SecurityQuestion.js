@@ -24,14 +24,6 @@ const QuestionPage = ({docID,email,loggedIn}) =>{
         getQuestion();
     },[]);
 
-    async function handleSignout(){
-        try {
-          await userSignOut();
-        } catch {
-          alert("Something went wrong !!!");
-        }
-      }
-
     async function getQuestion(){
         const docRef = doc(firebaseDB, "securityquestions", docID);
         const docSnap = await getDoc(docRef);
